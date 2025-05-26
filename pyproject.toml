@@ -1,0 +1,13 @@
+[project]
+name = "api-yandress-appointments"
+version = "0.1.0"
+description = "A simple API for managing appointments"
+readme = "README.md"
+authors = [
+	{ name = "Carlos Torres", email = "carlostorrestcca@gmail.com" }
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
