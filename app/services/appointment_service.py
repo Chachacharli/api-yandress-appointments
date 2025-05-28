@@ -14,8 +14,10 @@ class AppointmentService:
     def create_appointment(self, appointment_data) -> Appointment:
         return self.appointment_repository.create_appointment(appointment_data)
 
-    def get_appointments(self) -> list[Appointment]:
-        return self.appointment_repository.get_appointments()
+    def get_appointments(self, filters, params) -> list[Appointment]:
+        return self.appointment_repository.get_appointments(
+            filters=filters, params=params
+        )
 
     def get_appointment(self, appointment_id: UUID) -> Appointment | None:
         return self.appointment_repository.get_appointment(appointment_id)

@@ -1,10 +1,16 @@
+from datetime import datetime
 from uuid import UUID
 
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
-from datetime import datetime
 
+from app.core.filters.BaseFilterFactory import FilterFactory
 from app.models.appointment import Appointment
-from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
+from app.schemas.appointment import (
+    AppointmentCreate,
+    AppointmentFilter,
+    AppointmentUpdate,
+)
 
 
 class AppointmentRepository:
@@ -18,8 +24,19 @@ class AppointmentRepository:
         self.db.refresh(db_appointment)
         return db_appointment
 
-    def get_appointments(self) -> list[Appointment]:
-        return self.db.query(Appointment).all()
+    def get_appointments(self, filters: AppointmentFilter, params) -> list[Appointment]:
+        query = self.db.query(Appointment)
+        pagintion_filter = FilterFactory(Appointment)
+        pagintion_filter = FilterFactory(Appointment)
+        pagintion_filter.text("name", filters.name)
+        pagintion_filter.text("phone", filters.phone)
+        pagintion_filter.boolean("completed", filters.completed)
+        pagintion_filter.daterange("create_at", filters.created)
+        pagintion_filter.daterange("completed_at", filters.completed_date)
+
+        query = pagintion_filter.build(query)
+
+        return paginate(query, params=params)
 
     def get_appointment(self, appointment_id: UUID) -> Appointment | None:
         return (

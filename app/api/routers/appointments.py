@@ -1,5 +1,6 @@
 # app/api/appointments.py
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_pagination import Page, Params
 from sqlalchemy.orm import Session
 
 # from app.api.dependencies import (
@@ -9,6 +10,7 @@ from app.database.session import get_db
 from app.schemas.appointment import (
     AppointmentCreate,
     AppointmentDelete,
+    AppointmentFilter,
     AppointmentRead,
     AppointmentUpdate,
 )
@@ -18,8 +20,10 @@ router = APIRouter(prefix="/appointments", tags=["appointments"])
 
 
 # Get all appointments
-@router.get("/", response_model=list[AppointmentRead])
+@router.get("/", response_model=Page[AppointmentRead])
 async def get_all_appointments(
+    filters: AppointmentFilter = Depends(),
+    params: Params = Depends(),
     db: Session = Depends(get_db),
 ):
     """
@@ -27,7 +31,7 @@ async def get_all_appointments(
     """
     try:
         appointments_service = AppointmentService(db)
-        appointments = appointments_service.get_appointments()
+        appointments = appointments_service.get_appointments(filters, params)
         return appointments
     except Exception as e:
         print(e)

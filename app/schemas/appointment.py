@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from app.core.filtering import DateRange, Order, Pagination
+from app.schemas.common import DateRange
 
 
 class AppointmentBase(BaseModel):
@@ -14,7 +14,6 @@ class AppointmentBase(BaseModel):
 
 class AppointmentCreate(AppointmentBase):
     create_at: datetime | None = None
-    pass
 
 
 class AppointmentUpdate(BaseModel):
@@ -42,11 +41,8 @@ class AppointmentDelete(BaseModel):
 
 
 class AppointmentFilter(BaseModel):
-    name: str | None = Field(None, description="Búsqueda parcial")
+    name: str | None = None
     phone: str | None = None
     completed: bool | None = None
     created: DateRange | None = None
     completed_date: DateRange | None = None
-    order_by: str | None = "create_at"
-    order: Order = Order.desc
-    pagination: Pagination = Pagination()
