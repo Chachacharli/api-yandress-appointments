@@ -27,12 +27,12 @@ class AppointmentRepository:
     def get_appointments(self, filters: AppointmentFilter, params) -> list[Appointment]:
         query = self.db.query(Appointment)
         pagintion_filter = FilterFactory(Appointment)
-        pagintion_filter = FilterFactory(Appointment)
         pagintion_filter.text("name", filters.name)
         pagintion_filter.text("phone", filters.phone)
         pagintion_filter.boolean("completed", filters.completed)
         pagintion_filter.daterange("create_at", filters.created)
         pagintion_filter.daterange("completed_at", filters.completed_date)
+        pagintion_filter.order_by(filters.order_by)
 
         query = pagintion_filter.build(query)
 

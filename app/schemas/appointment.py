@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from app.schemas.common import DateRange
+from app.schemas.common import DateRange, OrderBy
 
 
 class AppointmentBase(BaseModel):
@@ -28,6 +28,12 @@ class AppointmentUpdate(BaseModel):
 
 class AppointmentRead(AppointmentBase):
     id: UUID
+    name: str | None = None
+    phone: str | None = None
+    notes: str | None = None
+    completed: bool = None
+    update_at: datetime | None = None
+    completed_at: datetime | None = None
 
     class Config:
         from_attributes = True
