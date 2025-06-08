@@ -3,7 +3,8 @@ from typing import Generic, TypeVar
 from sqlalchemy import and_, asc, desc
 from sqlalchemy.orm import Query
 
-from app.schemas.common import DateRange, Order, OrderBy
+from app.models.appointment import Appointment
+from app.schemas.common import DateRange, Order
 
 T = TypeVar("T")
 
@@ -13,16 +14,18 @@ class FilterFactory(Generic[T]):
         self.model = model
         self.filters = []
         self.sort = None
+        self.sort_column = None
+        self.sort_direction = Order.none
 
-    def text(self, field_name: str, value: str | None):
+    def text(self, field_name: str, value: str | None) -> Query:
         if value:
             self.filters.append(getattr(self.model, field_name).ilike(f"%{value}%"))
 
-    def boolean(self, field_name: str, value: bool | None):
+    def boolean(self, field_name: str, value: bool | None) -> Query:
         if value is not None:
             self.filters.append(getattr(self.model, field_name) == value)
 
-    def daterange(self, field_name: str, range_obj: DateRange | None):
+    def daterange(self, field_name: str, range_obj: DateRange | None) -> Query:
         if range_obj:
             col = getattr(self.model, field_name)
             if range_obj.start_date:
@@ -30,22 +33,20 @@ class FilterFactory(Generic[T]):
             if range_obj.end_date:
                 self.filters.append(col <= range_obj.end_date)
 
-    def order_by(self, order_by: OrderBy):
-        if order_by is None or order_by.direction is None:
-            return
-        if order_by.direction.name == Order.none.name:
-            return
+    def order_by(self, order_by: str, direction: Order | None = None):
+        if not hasattr(self.model, order_by):
+            raise ValueError(f"Invalid order_by field: {order_by}")
 
-        direction = order_by.direction
-        field = order_by.field
-
-        col = getattr(self.model, field, None)
-        if col is None:
-            return
-        if direction == Order.asc.name:
-            self.sort = asc(col)
-        elif direction == Order.desc.name:
-            self.sort = desc(col)
+        self.sort_column = getattr(self.model, order_by)
+        self.sort_direction = direction or Order.asc
 
     def build(self, query: Query) -> Query:
-        return query.filter(and_(*self.filters)) if self.filters else query
+        if self.filters:
+            query = query.filter(and_(*self.filters))
+
+        if self.sort_column is not None:
+            if self.sort_direction == Order.desc:
+                query = query.order_by(desc(self.sort_column))
+            else:
+                query = query.order_by(asc(self.sort_column))
+        return query

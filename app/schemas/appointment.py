@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from app.schemas.common import DateRange, OrderBy
+from app.schemas.common import DateRange, Order
 
 
 class AppointmentBase(BaseModel):
@@ -52,3 +52,5 @@ class AppointmentFilter(BaseModel):
     completed: bool | None = None
     created: DateRange | None = None
     completed_date: DateRange | None = None
+    oder_by: str | None = None
+    direction: Order | None = None

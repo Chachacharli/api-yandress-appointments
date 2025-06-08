@@ -32,7 +32,7 @@ class AppointmentRepository:
         pagintion_filter.boolean("completed", filters.completed)
         pagintion_filter.daterange("create_at", filters.created)
         pagintion_filter.daterange("completed_at", filters.completed_date)
-        pagintion_filter.order_by(filters.order_by)
+        pagintion_filter.order_by(filters.oder_by, filters.direction)
 
         query = pagintion_filter.build(query)
 
