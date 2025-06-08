@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Generic, TypeVar
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 T = TypeVar("T")
@@ -11,6 +12,19 @@ class Order(str, Enum):
     asc = "asc"
     desc = "desc"
     none = "none"
+
+
+class DateTimeRange(str, Enum):
+    start = "start"
+    end = "end"
+
+    @classmethod
+    def from_query(
+        cls,
+        start_date: datetime | None = Query(None, alias="start"),
+        end_date: datetime | None = Query(None, alias="end"),
+    ):
+        return cls(start_date=start_date, end_date=end_date)
 
 
 class OrderBy(BaseModel):

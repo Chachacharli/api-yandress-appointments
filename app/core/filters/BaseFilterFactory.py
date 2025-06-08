@@ -34,6 +34,11 @@ class FilterFactory(Generic[T]):
                 self.filters.append(col <= range_obj.end_date)
 
     def order_by(self, order_by: str, direction: Order | None = None):
+        if not order_by:
+            self.sort_column = None
+            self.sort_direction = Order.none
+            return
+
         if not hasattr(self.model, order_by):
             raise ValueError(f"Invalid order_by field: {order_by}")
 

@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from fastapi import Query
+from pydantic import BaseModel
 
 from app.schemas.common import DateRange, Order
 
@@ -34,6 +35,7 @@ class AppointmentRead(AppointmentBase):
     completed: bool = None
     update_at: datetime | None = None
     completed_at: datetime | None = None
+    create_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -46,11 +48,25 @@ class AppointmentDelete(BaseModel):
         from_attributes = True
 
 
-class AppointmentFilter(BaseModel):
-    name: str | None = None
-    phone: str | None = None
-    completed: bool | None = None
-    created: DateRange | None = None
-    completed_date: DateRange | None = None
-    oder_by: str | None = None
-    direction: Order | None = None
+class AppointmentFilter:
+    def __init__(
+        self,
+        name: str | None = None,
+        phone: str | None = None,
+        completed: bool | None = None,
+        created_start: datetime | None = Query(None),
+        created_end: datetime | None = Query(None),
+        completed_start: datetime | None = Query(None),
+        completed_end: datetime | None = Query(None),
+        oder_by: str = "",
+        direction: Order = Order.desc,
+    ):
+        self.name = name
+        self.phone = phone
+        self.completed = completed
+        self.created = DateRange(start_date=created_start, end_date=created_end)
+        self.completed_date = DateRange(
+            start_date=completed_start, end_date=completed_end
+        )
+        self.oder_by = oder_by
+        self.direction = direction
