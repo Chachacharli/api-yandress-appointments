@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers.appointments import router as appointment_router
+from app.api.routers.auth import router as auth_router
 from app.database.base import Base
 from app.database.session import engine
 
@@ -21,5 +22,5 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 
-for router in [appointment_router]:
+for router in [appointment_router, auth_router]:
     app.include_router(router)

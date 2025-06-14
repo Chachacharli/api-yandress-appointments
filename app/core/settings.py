@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_PASSWORD: str
+    GOOGLE_CLIENT_ID: str
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
 
     class Config:
         env_file = ".env"
